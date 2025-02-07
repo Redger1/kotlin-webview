@@ -18,6 +18,8 @@ import com.example.linebet.ui.theme.LinebetTheme
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
+val url = BuildConfig.URL_LINK
+
 class MainActivity : ComponentActivity() {
     private lateinit var webView: WebView
 
@@ -40,7 +42,9 @@ class MainActivity : ComponentActivity() {
                 return true
             }
         }
-        webView.loadUrl("lineb.in")       // Замените URL на необходимый
+
+
+        webView.loadUrl(url)       // Замените URL на необходимый
     }
 }
 

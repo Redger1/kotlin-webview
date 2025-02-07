@@ -3,6 +3,19 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
 }
 
+fun loadEnv(): Map<String, String> {
+    val envFile = rootProject.file("app/url.properties")
+    if (!envFile.exists()) return emptyMap()
+    return envFile.readLines()
+        .filter { it.isNotBlank() && !it.trim().startsWith("#") }
+        .associate {
+            val (key, value) = it.split("=", limit = 2)
+            key.trim() to value.trim()
+        }
+}
+
+val env = loadEnv()
+
 android {
     namespace = "com.example.linebet"
     compileSdk = 34
@@ -18,10 +31,21 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "URL_LINK", "\"${env["URL_LINK"] ?: ""}\"")
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = "release"
+            keyPassword = "release"
+            storeFile = file("./release.keystore")
+            storePassword = "release"
+        }
     }
 
     buildTypes {
-        release {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -39,6 +63,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
